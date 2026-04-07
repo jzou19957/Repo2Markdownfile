@@ -1,4 +1,4 @@
-# Repo2Markdown
+# Repo2Markdownfile
 
 Repo2Markdown turns a public GitHub repository into one clean markdown file that is easy to upload into long-context LLM tools.
 
