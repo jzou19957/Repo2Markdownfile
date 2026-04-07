@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Repo2Markdownfile</title>
+    <meta
+      name="description"
+      content="Paste a public GitHub repository URL and download one structured markdown file for NotebookLM, Gemini, and other long-context LLMs."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-card">
+        <p class="eyebrow">Repo2Markdownfile</p>
+        <h1>Paste a public GitHub repo. Download one structured markdown file.</h1>
+        <p class="lede">
+          This GitHub Pages app reads a public GitHub repository in your browser and turns it into one markdown file that is easy to upload into NotebookLM, Gemini, ChatGPT, Claude, or another long-context LLM.
+        </p>
+
+        <form class="generator-form" id="generator-form">
+          <label for="github-url">Public GitHub link</label>
+          <input
+            id="github-url"
+            name="github_url"
+            type="url"
+            placeholder="https://github.com/owner/repo"
+            required
+          >
+          <button id="submit-button" type="submit">Generate Markdown</button>
+        </form>
+
+        <div class="status-panel" id="status-panel" hidden>
+          <p class="status-label" id="status-label">Preparing...</p>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <p class="status-detail" id="status-detail"></p>
+        </div>
+
+        <div class="error-banner" id="error-banner" hidden></div>
+
+        <section class="info-grid">
+          <article>
+            <h2>What it is for</h2>
+            <p>
+              Use the markdown file for a deep dive on a repository, quick familiarization before an interview, study plans, onboarding notes, or podcast prep.
+            </p>
+          </article>
+          <article>
+            <h2>Great with</h2>
+            <p>
+              NotebookLM, Gemini, ChatGPT projects, Claude, and other long-context tools that work better with one clean document than scattered repo pages.
+            </p>
+          </article>
+          <article>
+            <h2>Best for</h2>
+            <p>
+              Public repositories with a manageable number of text files. Very large repositories may take longer because everything runs in the browser.
+            </p>
+          </article>
+        </section>
+
+        <div class="examples">
+          <p>Examples:</p>
+          <ul>
+            <li><code>https://github.com/owner/repo</code></li>
+            <li><code>https://github.com/owner/repo/tree/main</code></li>
+            <li><code>https://github.com/owner/repo/tree/main/src</code></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+  </html>

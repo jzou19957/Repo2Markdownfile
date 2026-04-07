@@ -1,88 +1,103 @@
 # Repo2Markdownfile
 
-Repo2Markdown turns a public GitHub repository into one clean markdown file that is easy to upload into long-context LLM tools.
+Repo2Markdownfile is a public GitHub Pages web app that turns a public GitHub repository into one structured markdown file.
 
-The goal is simple: help someone understand a GitHub repository faster.
+A visitor pastes a GitHub repository link, waits for processing, and downloads a single markdown document that can be uploaded into long-context LLM tools.
 
-## Why this is useful
+## What problem it solves
 
-A lot of people want to paste a full repository into an LLM, but raw GitHub pages are fragmented and zip files are awkward. This app gives you one structured markdown document that is much easier to work with.
+GitHub repositories are spread across many files and folders, which makes them awkward to drop into an LLM for a full-repository deep dive.
 
-You can use the output with tools such as:
+Repo2Markdownfile solves that by turning a repository into one clean document so a long-context model can read the codebase much more easily.
+
+This is especially helpful for:
+
+- quickly familiarizing yourself with a GitHub repository
+- asking for a deep dive on architecture and important files
+- creating a study plan for learning a new codebase
+- making podcast prep notes or teaching material
+- building onboarding notes before joining a project
+
+## Great tools to use with the output
+
+The generated markdown file can be uploaded into:
 
 - NotebookLM
-- Gemini with a long context window
-- ChatGPT projects or long-context chats
-- Claude or other long-context LLMs
+- Gemini
+- ChatGPT projects or other long-context chats
+- Claude
+- other long-context LLM tools
 
-That makes it useful for:
-
-- getting a deep dive on what a repository does
-- quickly familiarizing yourself with a codebase before an interview or project
-- creating a study plan for learning a new repository
-- generating podcast prep notes or teaching material
-- summarizing architecture, important files, and likely entry points
-- helping non-technical users explore what a GitHub repository contains
-
-## What the app does
-
-1. A user pastes a public GitHub repository URL, branch URL, or common folder URL.
-2. The app downloads the GitHub archive automatically.
-3. It extracts supported text files from the repository.
-4. It combines those files into one structured markdown document.
-5. The browser downloads that markdown file immediately.
-
-## What the markdown output is good for
-
-The generated markdown file is designed to be fed into a long-context LLM so the model can analyze the repository as a whole instead of one file at a time.
-
-Good prompts after upload include:
+Example prompts after upload:
 
 - "Give me a beginner-friendly deep dive on this repository."
-- "Create a study plan so I can understand this codebase in 3 days."
+- "Help me quickly familiarize myself with this codebase."
+- "Create a study plan so I can understand this repository in a few days."
 - "Turn this repository into podcast talking points."
-- "Explain the architecture, main flows, and important files."
-- "What should I read first if I want to contribute to this project?"
+- "Explain the architecture, entry points, and key files."
 
-## Current capabilities
+## How the public app works
 
-- Accepts public GitHub URLs
-- Works with repo URLs and branch URLs
-- Produces one markdown download
-- Preserves markdown files when possible
-- Wraps code files in fenced code blocks
-- Skips common heavy folders like `node_modules`, `dist`, and `.git`
-- Marks binary or unsupported files instead of trying to inline them
+1. A user pastes a public GitHub repository URL.
+2. The browser reads the public repository using the GitHub API.
+3. The app collects supported text files.
+4. It combines those files into one structured markdown document.
+5. The browser downloads the markdown file directly.
 
-## Run locally
+No backend is required for the public site version.
+
+## What URLs it supports
+
+- `https://github.com/owner/repo`
+- `https://github.com/owner/repo/tree/main`
+- `https://github.com/owner/repo/tree/main/src`
+
+## What the markdown output includes
+
+- one combined markdown file
+- file-by-file sections
+- fenced code blocks for code files
+- markdown files preserved as readable markdown
+- notes for binary or unsupported files instead of broken output
+
+## Current public-site limits
+
+Because this version runs entirely in the browser, it works best for public repositories that are not extremely large.
+
+Current guardrails:
+
+- public repositories only
+- up to 250 files in scope
+- up to about 2.5 MB of total file content in scope
+
+If someone wants a huge repository, they can often paste a smaller folder URL instead of the whole repo.
+
+## Publish it with GitHub Pages
+
+This repository is set up so you can publish it as a GitHub Pages site.
+
+Steps:
+
+1. Push this repository to GitHub.
+2. Open the repository on GitHub.
+3. Go to `Settings`.
+4. Open `Pages`.
+5. Under `Build and deployment`, choose `Deploy from a branch`.
+6. Select the main branch and the `/root` folder.
+7. Save.
+
+GitHub will then give you a public site URL like:
+
+`https://yourusername.github.io/Repo2Markdownfile/`
+
+## Local preview
+
+Because this is now a static site, you can open `index.html` directly in a browser, or preview it with a simple static server.
+
+Example:
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
+python -m http.server
 ```
 
-Then open [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
-## Original zip workflow
-
-If you still want to use local zip files, place one or more `.zip` files in the project folder and run:
-
-```bash
-python convert_github_to_md.py
-```
-
-## Deploy publicly
-
-This app is a good fit for Render, Railway, or Fly.io.
-
-Production start command:
-
-```bash
-gunicorn app:app
-```
-
-## Current limitation
-
-- This version is for public repositories only.
+Then open `http://localhost:8000`.
