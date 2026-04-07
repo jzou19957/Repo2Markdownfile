@@ -9,6 +9,8 @@ const EXCLUDED_SEGMENTS = new Set([
   ".git", ".github", ".next", ".venv", "__pycache__", "build", "coverage", "dist", "node_modules", "venv"
 ]);
 
+const BATCH_SIZE = 40;
+
 const form = document.querySelector("#generator-form");
 const input = document.querySelector("#github-url");
 const submitButton = document.querySelector("#submit-button");
@@ -40,6 +42,13 @@ form.addEventListener("submit", async (event) => {
 
     const totalSize = blobFiles.reduce((sum, item) => sum + (item.size || 0), 0);
     const approxMb = (totalSize / 1_000_000).toFixed(2);
+
+    const sectionCount = Math.max(1, Math.ceil(blobFiles.length / BATCH_SIZE));
+    updateStatus(
+      "Preparing sections",
+      `This repository is being broken into ${sectionCount} manageable section${sectionCount === 1 ? "" : "s"} before merging into one markdown file.`,
+      20
+    );
 
     updateStatus(
       "Downloading file contents",
@@ -197,32 +206,55 @@ async function buildMarkdown(target, files) {
   ];
 
   const sortedFiles = [...files].sort((a, b) => a.path.localeCompare(b.path));
+  const batches = chunkFiles(sortedFiles, BATCH_SIZE);
+  let processedCount = 0;
 
-  for (let index = 0; index < sortedFiles.length; index += 1) {
-    const file = sortedFiles[index];
-    const progress = 28 + Math.round(((index + 1) / sortedFiles.length) * 64);
-    updateStatus("Downloading file contents", `Processing ${index + 1} of ${sortedFiles.length}: ${file.path}`, progress);
+  for (let batchIndex = 0; batchIndex < batches.length; batchIndex += 1) {
+    const batch = batches[batchIndex];
+    updateStatus(
+      "Processing section",
+      `Section ${batchIndex + 1} of ${batches.length}. Breaking the repository into manageable parts, then merging everything into one markdown file.`,
+      28 + Math.round((processedCount / sortedFiles.length) * 64)
+    );
 
-    const extension = getExtension(file.path);
-    if (!TEXT_EXTENSIONS.has(extension)) {
-      lines.push(`## ${file.path}`, "", "_Skipped binary or unsupported file type._", "");
-      continue;
-    }
+    for (const file of batch) {
+      processedCount += 1;
+      const progress = 28 + Math.round((processedCount / sortedFiles.length) * 64);
+      updateStatus(
+        "Downloading file contents",
+        `Section ${batchIndex + 1} of ${batches.length}. Processing ${processedCount} of ${sortedFiles.length}: ${file.path}`,
+        progress
+      );
 
-    const blob = await fetchJson(file.url);
-    const decoded = decodeBase64Utf8(blob.content || "");
+      const extension = getExtension(file.path);
+      if (!TEXT_EXTENSIONS.has(extension)) {
+        lines.push(`## ${file.path}`, "", "_Skipped binary or unsupported file type._", "");
+        continue;
+      }
 
-    lines.push(`## ${file.path}`, "");
-    if (extension === ".md") {
-      lines.push(decoded.trimEnd(), "");
-    } else {
-      lines.push(`\`\`\`${extension.slice(1) || "text"}`);
-      lines.push(decoded.trimEnd());
-      lines.push("```", "");
+      const blob = await fetchJson(file.url);
+      const decoded = decodeBase64Utf8(blob.content || "");
+
+      lines.push(`## ${file.path}`, "");
+      if (extension === ".md") {
+        lines.push(decoded.trimEnd(), "");
+      } else {
+        lines.push(`\`\`\`${extension.slice(1) || "text"}`);
+        lines.push(decoded.trimEnd());
+        lines.push("```", "");
+      }
     }
   }
 
   return `${lines.join("\n").trim()}\n`;
+}
+
+function chunkFiles(files, size) {
+  const chunks = [];
+  for (let index = 0; index < files.length; index += size) {
+    chunks.push(files.slice(index, index + size));
+  }
+  return chunks;
 }
 
 function getExtension(filePath) {
