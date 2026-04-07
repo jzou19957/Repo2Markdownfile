@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Repo2Markdown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-card">
+        <p class="eyebrow">Repo2Markdown</p>
+        <h1>Turn any public GitHub repo into one LLM-ready markdown file.</h1>
+        <p class="lede">
+          Paste a public GitHub repository, branch, or folder URL. The app downloads the archive, turns the repository into one structured markdown document, and gives you a clean file you can upload to NotebookLM, Gemini, or another long-context LLM for a fast deep dive.
+        </p>
+
+        <form class="generator-form" action="/generate" method="post">
+          <label for="github_url">GitHub link</label>
+          <input
+            id="github_url"
+            name="github_url"
+            type="url"
+            placeholder="https://github.com/owner/repo"
+            value="{{ github_url or '' }}"
+            required
+          >
+          <button type="submit">Generate Markdown</button>
+        </form>
+
+        {% if error %}
+        <div class="error-banner">{{ error }}</div>
+        {% endif %}
+
+        <div class="examples">
+          <p>Works well for:</p>
+          <ul>
+            <li><code>https://github.com/owner/repo</code></li>
+            <li><code>https://github.com/owner/repo/tree/main</code></li>
+            <li>Uploading the markdown into NotebookLM or Gemini for repository familiarization</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+  </html>
