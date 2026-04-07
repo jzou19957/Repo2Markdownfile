@@ -60,17 +60,18 @@ No backend is required for the public site version.
 - markdown files preserved as readable markdown
 - notes for binary or unsupported files instead of broken output
 
-## Current public-site limits
+## Current behavior for large repositories
 
-Because this version runs entirely in the browser, it works best for public repositories that are not extremely large.
+Because this version runs entirely in the browser, very large repositories may take longer to process.
 
-Current guardrails:
+Current notes:
 
 - public repositories only
-- up to 250 files in scope
-- up to about 2.5 MB of total file content in scope
+- large repositories are allowed
+- big repositories may take a while to finish
+- GitHub API rate limits can still affect very large runs
 
-If someone wants a huge repository, they can often paste a smaller folder URL instead of the whole repo.
+If a very large repository is slow, users can still paste a smaller folder URL for a faster result.
 
 ## Publish it with GitHub Pages
 

@@ -9,9 +9,6 @@ const EXCLUDED_SEGMENTS = new Set([
   ".git", ".github", ".next", ".venv", "__pycache__", "build", "coverage", "dist", "node_modules", "venv"
 ]);
 
-const MAX_FILES = 250;
-const MAX_TOTAL_SIZE = 2_500_000;
-
 const form = document.querySelector("#generator-form");
 const input = document.querySelector("#github-url");
 const submitButton = document.querySelector("#submit-button");
@@ -41,16 +38,14 @@ form.addEventListener("submit", async (event) => {
       throw new Error("No supported files were found for that repository or folder.");
     }
 
-    if (blobFiles.length > MAX_FILES) {
-      throw new Error(`This repository has ${blobFiles.length} files in scope. For the public browser version, the current limit is ${MAX_FILES} files.`);
-    }
-
     const totalSize = blobFiles.reduce((sum, item) => sum + (item.size || 0), 0);
-    if (totalSize > MAX_TOTAL_SIZE) {
-      throw new Error("This repository is a bit too large for the public browser version right now. Try a smaller repo or a specific folder URL.");
-    }
+    const approxMb = (totalSize / 1_000_000).toFixed(2);
 
-    updateStatus("Downloading file contents", `Processing ${blobFiles.length} files in your browser.`, 28);
+    updateStatus(
+      "Downloading file contents",
+      `Processing ${blobFiles.length} files in your browser, about ${approxMb} MB of text content.`,
+      28
+    );
     const markdown = await buildMarkdown(target, blobFiles);
 
     updateStatus("Preparing download", "Your markdown file is ready.", 100);
